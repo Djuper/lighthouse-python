@@ -21,7 +21,7 @@ class LighthouseRunner(object):
         report (LighthouseReport): object with simplified report
     """
 
-    def __init__(self, url, form_factor='mobile', quiet=True,
+    def __init__(self, url, form_factor='mobile', quiet=True, report_path=None,
                  additional_settings=None):
         """
         Args:
@@ -35,10 +35,14 @@ class LighthouseRunner(object):
 
         assert form_factor in ['mobile', 'desktop']
 
-        _, self.__report_path = tempfile.mkstemp(suffix='.json')
+        if report_path:
+            self.__report_path = report_path
+        else:
+            _, self.__report_path = tempfile.mkstemp(suffix='.json')
+
         self._run(url, form_factor, quiet, additional_settings)
         self.report = self._get_report()
-        self._clean()
+        # self._clean()
 
     def _run(self, url, form_factor, quiet, additional_settings=None):
         report_path = self.__report_path
@@ -54,7 +58,7 @@ class LighthouseRunner(object):
                 '--preset=full',
                 '--emulated-form-factor={0}'.format(form_factor),
                 '--output=json',
-                '--output-path={0}'.format(report_path),
+                '--output-path={0}'.format(report_path)
             ]
 
             command = command + additional_settings
@@ -68,12 +72,14 @@ class LighthouseRunner(object):
             raise RuntimeError(msg)
 
     def _get_report(self):
-        with open(self.__report_path, 'r') as fil:
+        with open(self.__report_path, encoding='utf-8') as fil:
             return LighthouseReport(json.load(fil))
 
     def _clean(self):
-        os.remove(self.__report_path)
-
+        try:
+            os.remove(self.__report_path)
+        except PermissionError:
+            return
 
 class LighthouseRepeatRunner(object):
     def __init__(self, url, form_factor='mobile', quiet=True,
