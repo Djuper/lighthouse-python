@@ -54,7 +54,7 @@ class LighthouseRunner(object):
                 'lighthouse',
                 url,
                 '--quiet' if quiet else '',
-                '--chrome-flags="--headless --no-sandbox"',
+                '--chrome-flags="--headless --no-sandbox --disable-gpu"',
                 '--preset=perf',
                 '--emulated-form-factor={0}'.format(form_factor),
                 '--output=json',
