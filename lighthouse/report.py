@@ -59,6 +59,10 @@ class LighthouseReport(object):
             if k in self.__timings
         }
 
+
+    def get_audits(self):
+        return self.__data['audits']
+
     @property
     def audits(self):
         """
