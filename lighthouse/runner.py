@@ -69,7 +69,7 @@ class LighthouseRunner(object):
                 returned an error code: {1},
                 output: {2}
             '''.format(exc.cmd, exc.returncode, exc.output)
-            raise RuntimeError(msg)
+            # raise RuntimeError(msg)
 
     def _get_report(self):
         with open(self.__report_path, encoding='utf-8') as fil:
