@@ -55,8 +55,8 @@ class LighthouseRunner(object):
                 url,
                 '--quiet' if quiet else '',
                 '--chrome-flags="--headless --no-sandbox --disable-gpu --max-wait-for-load=10000"',
-                '--preset=perf',
-                '--formFactor={0}'.format(form_factor),
+                '--preset=desktop',
+                # '--formFactor={0}'.format(form_factor),
                 '--output=json',
                 '--output-path={0}'.format(report_path)
             ]
@@ -80,6 +80,7 @@ class LighthouseRunner(object):
             os.remove(self.__report_path)
         except PermissionError:
             return
+
 
 class LighthouseRepeatRunner(object):
     def __init__(self, url, form_factor='mobile', quiet=True,
