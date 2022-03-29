@@ -21,7 +21,7 @@ class LighthouseRunner(object):
         report (LighthouseReport): object with simplified report
     """
 
-    def __init__(self, url, form_factor='mobile', quiet=True, report_path=None,
+    def __init__(self, url, form_factor='desktop', quiet=True, report_path=None,
                  additional_settings=None):
         """
         Args:
@@ -55,8 +55,8 @@ class LighthouseRunner(object):
                 url,
                 '--quiet' if quiet else '',
                 '--chrome-flags="--headless --no-sandbox --disable-gpu --max-wait-for-load=10000"',
-                '--preset=desktop',
-                # '--formFactor={0}'.format(form_factor),
+                '--preset=perf',
+                '--formFactor={0}'.format(form_factor),
                 '--output=json',
                 '--output-path={0}'.format(report_path)
             ]
