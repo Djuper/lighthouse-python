@@ -21,7 +21,7 @@ class LighthouseRunner(object):
         report (LighthouseReport): object with simplified report
     """
 
-    def __init__(self, url, form_factor='desktop', quiet=True, report_path=None,
+    def __init__(self, url, form_factor='desktop', quiet=True,
                  additional_settings=None):
         """
         Args:
@@ -35,17 +35,13 @@ class LighthouseRunner(object):
 
         assert form_factor in ['mobile', 'desktop']
 
-        if report_path:
-            self.__report_path = report_path
-        else:
-            _, self.__report_path = tempfile.mkstemp(suffix='.json')
-
+        _, self.report_path = tempfile.mkstemp(suffix='.json')
         self._run(url, form_factor, quiet, additional_settings)
         self.report = self._get_report()
-        # self._clean()
+        self._clean()
 
     def _run(self, url, form_factor, quiet, additional_settings=None):
-        report_path = self.__report_path
+        report_path = self.report_path
 
         additional_settings = additional_settings or []
 
@@ -56,9 +52,9 @@ class LighthouseRunner(object):
                 '--quiet' if quiet else '',
                 '--chrome-flags="--headless --no-sandbox --disable-gpu --max-wait-for-load=10000"',
                 '--preset=perf',
-                '--formFactor={0}'.format(form_factor),
+                # '--form-factor={0}'.format(form_factor),
                 '--output=json',
-                '--output-path={0}'.format(report_path)
+                '--output-path={0}'.format(report_path),
             ]
 
             command = command + additional_settings
@@ -69,17 +65,17 @@ class LighthouseRunner(object):
                 returned an error code: {1},
                 output: {2}
             '''.format(exc.cmd, exc.returncode, exc.output)
-            # raise RuntimeError(msg)
+            raise RuntimeError(msg)
 
     def _get_report(self):
-        with open(self.__report_path, encoding='utf-8') as fil:
-            return LighthouseReport(json.load(fil))
+        with open(self.report_path, 'r', encoding="utf8") as fil:
+            return LighthouseReport(json.loads(fil.read()))
 
     def _clean(self):
         try:
-            os.remove(self.__report_path)
-        except PermissionError:
-            return
+            os.remove(self.report_path)
+        except:
+            pass
 
 
 class LighthouseRepeatRunner(object):
