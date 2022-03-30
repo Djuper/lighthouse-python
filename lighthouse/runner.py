@@ -21,26 +21,23 @@ class LighthouseRunner(object):
         report (LighthouseReport): object with simplified report
     """
 
-    def __init__(self, url, form_factor='desktop', quiet=True,
+    def __init__(self, url, preset='desktop', quiet=False,
                  additional_settings=None):
         """
         Args:
             url (str): url to test
-            form_factor (str, optional): either mobile or desktop,
-                default is mobile
+            preset WARNING: If the --config-path flag is provided, this preset will be ignored.  [string] [choices: "perf", "experimental", "desktop"]
             quiet (bool, optional): should not output anything to stdout,
                 default is True
             additional_settings (list, optional): list of additional params
         """
 
-        assert form_factor in ['mobile', 'desktop']
-
         _, self.report_path = tempfile.mkstemp(suffix='.json')
-        self._run(url, form_factor, quiet, additional_settings)
+        self._run(url, preset, quiet, additional_settings)
         self.report = self._get_report()
         self._clean()
 
-    def _run(self, url, form_factor, quiet, additional_settings=None):
+    def _run(self, url, preset, quiet, additional_settings=None):
         report_path = self.report_path
 
         additional_settings = additional_settings or []
@@ -50,9 +47,8 @@ class LighthouseRunner(object):
                 'lighthouse',
                 url,
                 '--quiet' if quiet else '',
-                '--chrome-flags="--headless --no-sandbox --disable-gpu --max-wait-for-load=10000"',
-                '--preset=perf',
-                # '--form-factor={0}'.format(form_factor),
+                '--chrome-flags="--no-sandbox --disable-gpu --max-wait-for-load=10000"',
+                '--preset={0}'.format(preset),
                 '--output=json',
                 '--output-path={0}'.format(report_path),
             ]
@@ -79,7 +75,7 @@ class LighthouseRunner(object):
 
 
 class LighthouseRepeatRunner(object):
-    def __init__(self, url, form_factor='mobile', quiet=True,
+    def __init__(self, url, preset='desktop', quiet=True,
                  additional_settings=None, repeats=3):
         reports = []
 
@@ -87,7 +83,7 @@ class LighthouseRepeatRunner(object):
 
         for i in progress:
             progress.set_description('Run {0}/{1}'.format(i, repeats))
-            reports.append(LighthouseRunner(url, form_factor=form_factor,
+            reports.append(LighthouseRunner(url, preset=preset,
                                             quiet=quiet,
                                             additional_settings=additional_settings).report)   # noqa: E501
 
