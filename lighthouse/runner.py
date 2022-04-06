@@ -47,7 +47,7 @@ class LighthouseRunner(object):
                 'lighthouse',
                 url,
                 '--quiet' if quiet else '',
-                '--chrome-flags="--no-sandbox --disable-gpu --max-wait-for-load=10000"',
+                '--chrome-flags="--max-wait-for-load=10000"',
                 '--preset={0}'.format(preset),
                 '--output=json',
                 '--output-path={0}'.format(report_path),
